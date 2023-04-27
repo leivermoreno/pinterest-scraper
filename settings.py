@@ -6,9 +6,9 @@ OUTPUT_FOlDER = "output"
 
 DATABASE_NAME = "pinterest.sqlite"
 
-SCROLL_DELAY = 1  # todo set to 0.5
+SCROLL_DELAY = 0.25  # todo set to 0.5
 DOWNLOAD_DELAY = 2
 
-TIMEOUT = 15  # todo set to 30
+TIMEOUT = 10  # todo set to 30
 
-MAX_RETRY = 0  # todo set to 2
+MAX_RETRY = 2  # todo set to 2

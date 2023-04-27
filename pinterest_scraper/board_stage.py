@@ -48,7 +48,7 @@ class BoardStage(Stage):
         query = urllib.parse.quote_plus(self._job["query"])
         url = URL.format(query)
 
-        for i in range(0, MAX_RETRY + 1):
+        for i in range(MAX_RETRY + 1):
             try:
                 self._driver.get(url)
                 self._scrape()
@@ -56,10 +56,10 @@ class BoardStage(Stage):
             except TimeoutException:
                 if i == MAX_RETRY:
                     raise
-            finally:
-                logger.exception(
-                    f"Timeout exception scraping boards from {url}, retrying..."
-                )
+
+            logger.exception(
+                f"Timeout scraping boards from {url}, retrying..."
+            )
 
         self._db.update_job_stage(self._job["id"], "pin")
         logger.info("Finished scraping of boards. Starting pins stage.")
