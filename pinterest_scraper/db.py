@@ -5,11 +5,11 @@ from typing import List
 
 from settings import DATABASE_NAME
 
-logger = logging.getLogger(f'scraper.{__name__}')
+logger = logging.getLogger(f"scraper.{__name__}")
 _conn: sqlite3.Connection | None = None
 
 
-def create_tables() -> None:
+def _create_tables() -> None:
     # creating tables
     _conn.executescript(
         f"""
@@ -42,7 +42,7 @@ def initialize() -> None:
     _conn = sqlite3.connect(DATABASE_NAME)
     _conn.execute("PRAGMA foreign_keys = ON")
     _conn.row_factory = Row
-    create_tables()
+    _create_tables()
     logger.debug("Db conn set up.")
 
 
@@ -136,9 +136,7 @@ def get_all_board_or_pin_by_job_id(name: str, job_id: int) -> List[Row]:
     return curr.fetchall()
 
 
-def update_board_or_pin_done_by_url(
-        name: str, url: str, done: int
-) -> None:
+def update_board_or_pin_done_by_url(name: str, url: str, done: int) -> None:
     assert name in _name_list
 
     _conn.execute(
@@ -146,5 +144,7 @@ def update_board_or_pin_done_by_url(
     UPDATE {name}
     SET done = ?
     WHERE url = ?
-    """, (done, url))
+    """,
+        (done, url),
+    )
     _conn.commit()

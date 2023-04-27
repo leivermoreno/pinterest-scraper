@@ -2,7 +2,7 @@ import logging
 import time
 from functools import wraps
 
-logger = logging.getLogger(f'scraper.{__name__}')
+logger = logging.getLogger(f"scraper.{__name__}")
 
 
 def time_perf(log_str: str):
@@ -13,7 +13,7 @@ def time_perf(log_str: str):
             result = f(*args, **kwargs)
             end = time.perf_counter()
             elapsed_min = (end - start) / 60
-            logger.info(f'Took {elapsed_min:.2f} minutes to {log_str}.')
+            logger.info(f"Took {elapsed_min:.2f} minutes to {log_str}.")
 
             return result
 
