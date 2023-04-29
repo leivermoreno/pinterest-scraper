@@ -46,7 +46,7 @@ def initialize() -> None:
     logger.debug("Db conn set up.")
 
 
-def close_conn() -> None:  # todo when? on command or at final of operations
+def close_conn() -> None:
     _conn.close()
 
 

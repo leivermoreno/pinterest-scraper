@@ -74,9 +74,8 @@ class Command:
             )
         finally:
             db.close_conn()
-
-            if stage_instance._driver:  # todo keep this?
-                stage_instance.close()
+            # noinspection PyUnboundLocalVariable
+            stage_instance.close()
 
 
 fire.Fire(Command)

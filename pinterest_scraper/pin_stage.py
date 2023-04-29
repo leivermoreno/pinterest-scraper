@@ -94,6 +94,7 @@ class PinStage(Stage):
                 if retries == MAX_RETRY:
                     raise
 
+                # noinspection PyUnboundLocalVariable
                 logger.exception(f"Timeout scraping boards from {url}, retrying...")
                 retries += 1
 

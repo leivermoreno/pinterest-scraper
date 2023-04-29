@@ -4,17 +4,14 @@ import time
 from sqlite3 import Row
 from typing import Callable, Optional
 
+import undetected_chromedriver as webdriver
 from fake_useragent import UserAgent
-from selenium import webdriver
 from selenium.common import StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 
 from pinterest_scraper import db
 from settings import TIMEOUT, SCROLL_DELAY, MAX_RETRY
-
-# todo revert this
-# import undetected_chromedriver as webdriver
 
 logger = logging.getLogger(f"scraper.{__name__}")
 
@@ -56,7 +53,7 @@ class Stage:
         logger.debug("Starting scraping.")
         self.__init_driver()
 
-    def close(self) -> None:  # todo when?
+    def close(self) -> None:
         self._driver.quit()
         logger.debug("Driver closed.")
 
