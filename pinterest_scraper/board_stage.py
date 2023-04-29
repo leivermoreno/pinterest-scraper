@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 
 from selenium.common import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as ec
 
 from pinterest_scraper.pin_stage import PinStage
 from pinterest_scraper.stage import Stage
@@ -21,16 +21,16 @@ class BoardStage(Stage):
     def _scroll_and_scrape(self, fn: Callable) -> None:
         super()._scroll_and_scrape(fn)
 
-    def _scrape_urls(self, urls: set):
+    def _scrape_urls(self, urls: set) -> None:
         boards = self._wait.until(
-            EC.presence_of_all_elements_located(
+            ec.presence_of_all_elements_located(
                 (By.CSS_SELECTOR, "div[role=listitem] a")
             )
         )
         board_relative_urls = [board.get_attribute("href") for board in boards]
         urls.update(board_relative_urls)
 
-    def _scrape(self):
+    def _scrape(self) -> None:
         board_urls = set()
 
         self._scroll_and_scrape(lambda: self._scrape_urls(board_urls))
@@ -57,9 +57,7 @@ class BoardStage(Stage):
                 if i == MAX_RETRY:
                     raise
 
-            logger.exception(
-                f"Timeout scraping boards from {url}, retrying..."
-            )
+                logger.exception(f"Timeout scraping boards from {url}, retrying...")
 
         self._db.update_job_stage(self._job["id"], "pin")
         logger.info("Finished scraping of boards. Starting pins stage.")

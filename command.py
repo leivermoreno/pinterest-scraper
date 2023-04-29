@@ -1,12 +1,11 @@
 import logging
+from os import path
 
 import fire
 
 import logging_config
+import settings
 from pinterest_scraper import db
-from pinterest_scraper.board_stage import BoardStage
-from pinterest_scraper.download_stage import DownloadStage
-from pinterest_scraper.pin_stage import PinStage
 
 logging_config.configure()
 logger = logging.getLogger(f"scraper.{__name__}")
@@ -20,13 +19,24 @@ class Command:
         jobs = db.get_all_jobs()
         if not jobs:
             print("No jobs created yet.")
+            return
 
         for job in jobs:
             print(
                 f'{job["id"]}. Job for query: {job["query"]}, in stage: {job["stage"]}.'
             )
 
-    def start_scraping(self, query: str, headed: bool = False):
+    def delete_job(self, query: str):
+        job = db.get_job_by_query(query)
+
+        if not job:
+            print("There is no job for query.")
+            return
+
+        db.delete_job_by_query(job)
+        print("Successfully deleted.")
+
+    def start_scraping(self, query: str, headed: bool = False, output: str = None):
         job = db.get_job_by_query(query)
 
         if not job:
@@ -34,13 +44,27 @@ class Command:
             job_id = db.create_job(query)
             job = {"id": job_id, "query": query, "stage": "board"}
 
+        if output:
+            settings.OUTPUT_FOlDER = path.expanduser(output)
+
+        print(settings.OUTPUT_FOlDER)
+
         stage = job["stage"]
         if stage == "board":
+            from pinterest_scraper.board_stage import BoardStage
+
             stage_cls = BoardStage
         elif stage == "pin":
+            from pinterest_scraper.pin_stage import PinStage
+
             stage_cls = PinStage
-        else:
+        elif stage == "download":
+            from pinterest_scraper.download_stage import DownloadStage
+
             stage_cls = DownloadStage
+        else:
+            print("Job already completed.")
+            return
 
         try:
             stage_instance = stage_cls(job, headless=not headed)
@@ -51,8 +75,10 @@ class Command:
                 exc_info=True,
             )
         finally:
-            stage_instance.close()
             db.close_conn()
+
+            if stage_instance._driver:  # todo keep this?
+                stage_instance.close()
 
 
 fire.Fire(Command)
