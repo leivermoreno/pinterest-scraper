@@ -4,9 +4,9 @@ from os import path
 
 import colorlog
 
-from settings import LOG_LEVEL, OUTPUT_FOlDER
+from settings import LOG_LEVEL
 
-logs_path = path.join(OUTPUT_FOlDER, "logs")
+logs_path = "logs"
 os.makedirs(logs_path, exist_ok=True)
 
 log_format = "%(asctime)s - %(levelname)s - %(name)s - %(funcName)s - %(message)s"

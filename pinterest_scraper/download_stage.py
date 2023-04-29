@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import uuid
 from datetime import timedelta
 from os import path
 from sqlite3 import Row
@@ -16,6 +17,13 @@ logger = logging.getLogger(f"scraper.{__name__}")
 
 
 class DownloadStage(Stage):
+    def __init_output_dir(self) -> None:
+        dir_path = path.join(OUTPUT_FOlDER, "jobs", self._job["query"])
+        self.__images_path = path.join(dir_path, "images")
+        self.__html_path = path.join(dir_path, "html")
+        os.makedirs(self.__images_path, exist_ok=True)
+        os.makedirs(self.__html_path, exist_ok=True)
+
     def __get_img_urls(self, url: str) -> List[str]:
         parsed_url = urlparse(url)
         path_parts = parsed_url.path.split("/")
@@ -43,9 +51,9 @@ class DownloadStage(Stage):
         return new_urls
 
     def __save_img(self, res: Response, img_url: str) -> None:
-        basename = path.basename(img_url)
-        img_path = path.join(OUTPUT_FOlDER, "jobs", self._job["query"], basename)
-        os.makedirs(path.dirname(img_path), exist_ok=True)
+        ext = path.splitext(img_url)[1]
+        basename = f"{uuid.uuid1()}{ext}"
+        img_path = path.join(self.__images_path, basename)
 
         with open(img_path, "wb") as fh:
             fh.write(res.content)
@@ -72,6 +80,7 @@ class DownloadStage(Stage):
 
     def start_scraping(self) -> None:
         # super().start_scraping() # todo revert this
+        self.__init_output_dir()
 
         with Session() as session:
             retries = 0
@@ -90,7 +99,7 @@ class DownloadStage(Stage):
                         logger.info(f"Successfully scraped pin {pin['url']}.")
 
                     break
-                except RequestException as e:
+                except RequestException:
                     if retries == MAX_RETRY:
                         raise
 

@@ -47,8 +47,6 @@ class Command:
         if output:
             settings.OUTPUT_FOlDER = path.expanduser(output)
 
-        print(settings.OUTPUT_FOlDER)
-
         stage = job["stage"]
         if stage == "board":
             from pinterest_scraper.board_stage import BoardStage
