@@ -2,9 +2,9 @@ import logging
 import urllib.parse
 from typing import Iterator
 
-import settings
 from browser import BrowserManager
 from db import setup_db
+from settings import OUTPUT_DIR
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
@@ -14,7 +14,7 @@ class Scraper:
         query = urllib.parse.quote_plus(query)
         self.base_url = "https://www.pinterest.com"
         self.initial_url = f"{self.base_url}/search/boards/?q={query}&rs=typed"
-        self.output_dir = settings.OUTPUT_DIR
+        self.output_dir = OUTPUT_DIR
         self.engine: Engine
         self.session: Session
         self.proxy_list: Iterator
