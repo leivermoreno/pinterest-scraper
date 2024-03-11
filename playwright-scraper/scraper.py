@@ -3,6 +3,7 @@ import urllib.parse
 from typing import Iterator
 
 import settings
+from db import setup_db
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
@@ -19,5 +20,20 @@ class Scraper:
         self.proxy_list: Iterator
         self.logger = logging.getLogger(__name__)
 
+    def setup(self) -> None:
+        self.output_dir.mkdir(exist_ok=True)
+        self.engine = setup_db()
+        self.session = Session(self.engine)
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(name)s - %(funcName)s - %(message)s",
+            datefmt="%m-%d %H:%M:%S",
+        )
+        self.logger.info("Scraper setup complete")
+
     def run(self) -> None:
-        pass
+        try:
+            self.setup()
+        finally:
+            if self.session is not None:
+                self.session.close()
