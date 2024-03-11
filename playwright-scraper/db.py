@@ -11,6 +11,7 @@ class Url(Base):
     __tablename__ = "url"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    scraped: Mapped[bool]
     url: Mapped[str]
 
 
