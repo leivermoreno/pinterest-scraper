@@ -1,5 +1,8 @@
+import itertools
 import logging
+import random
 import urllib.parse
+from pathlib import Path
 from typing import Iterator
 
 import settings
@@ -20,10 +23,24 @@ class Scraper:
         self.proxy_list: Iterator
         self.logger = logging.getLogger(__name__)
 
+    def load_proxy_list(self, proxy_list_path: Path) -> list[dict]:
+        proxy_list = []
+        with proxy_list_path.open("r", encoding="utf-8") as fp:
+            for line in fp:
+                [credentials, server] = line.split("@")
+                [username, password] = credentials.split(":")
+                proxy_list.append(
+                    {"server": server, "username": username, "password": password}
+                )
+        random.shuffle(proxy_list)
+
+        return proxy_list
+
     def setup(self) -> None:
         self.output_dir.mkdir(exist_ok=True)
         self.engine = setup_db()
         self.session = Session(self.engine)
+        self.proxy_list = itertools.cycle(self.load_proxy_list(self.proxy_list_path))
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s - %(levelname)s - %(name)s - %(funcName)s - %(message)s",
