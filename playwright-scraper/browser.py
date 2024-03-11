@@ -1,8 +1,11 @@
+import itertools
 import logging
+import random
+from pathlib import Path
 
 import psutil
 from playwright.sync_api import Page, sync_playwright
-from settings import HEADLESS
+from settings import HEADLESS, PROXY_LIST_PATH
 
 
 class Browser:
@@ -47,3 +50,25 @@ class Browser:
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.close()
         self._clean_process()
+
+
+class BrowserManager:
+
+    def __init__(self) -> None:
+        self._proxy_list = itertools.cycle(self._load_proxy_list(PROXY_LIST_PATH))
+
+    def _load_proxy_list(self, proxy_list_path: Path) -> list[dict]:
+        proxy_list = []
+        with proxy_list_path.open("r", encoding="utf-8") as fp:
+            for line in fp:
+                [credentials, server] = line.split("@")
+                [username, password] = credentials.split(":")
+                proxy_list.append(
+                    {"server": server, "username": username, "password": password}
+                )
+        random.shuffle(proxy_list)
+
+        return proxy_list
+
+    def get_browser(self, url: str) -> Browser:
+        return Browser(url, next(self._proxy_list))
