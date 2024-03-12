@@ -7,3 +7,6 @@ OUTPUT_DIR = Path("output")
 SQLITE_DB_PATH = OUTPUT_DIR / "db.sqlite3"
 PROXY_LIST_PATH = Path("proxies.txt")
 HEADLESS = is_production
+SCROLL_DELAY = 0.3
+CHECK_BOTTOM_TIMES = 33
+SHORT_WAIT = 3000
