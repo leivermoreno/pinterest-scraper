@@ -8,6 +8,7 @@ from db import setup_db
 from settings import OUTPUT_DIR
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
+from utils import default_retry
 from views.board_grid import BoardGridView
 from views.pin_grid import PinGridView
 
@@ -40,6 +41,7 @@ class Scraper:
     def join_urls(self, urls: Iterable) -> list[str]:
         return [urllib.parse.urljoin(self.base_url, url) for url in urls]
 
+    @default_retry
     def scrape_board_urls(self) -> list[str]:
         browser = self.browser_manager.get_browser(self.initial_url)
         with browser as page:
@@ -56,6 +58,7 @@ class Scraper:
 
         return processed_urls
 
+    @default_retry
     def scrape_board_pins(self, url: str) -> list[str]:
         browser = self.browser_manager.get_browser(url)
         with browser as page:
