@@ -13,14 +13,22 @@ class Url(Base):
     __tablename__ = "url"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    pin_url: Mapped[str]
+    board_url: Mapped[str]
+    query: Mapped[str]
     scraped: Mapped[bool]
-    url: Mapped[str]
 
     @staticmethod
-    def exclude_duplicates(session: Session, urls: Iterable) -> list[str]:
+    def exclude_duplicates(
+        session: Session, urls: Iterable, is_board: bool = False
+    ) -> list[str]:
         deduplicated_urls = []
         for url in urls:
-            stmt = select(Url).where(Url.url == url)
+            stmt = select(Url)
+            if is_board:
+                stmt = stmt.where(Url.board_url == url)
+            else:
+                stmt = stmt.where(Url.pin_url == url)
             result = session.scalars(stmt).first()
             if result is None:
                 deduplicated_urls.append(url)
