@@ -47,7 +47,9 @@ class Scraper:
 
         urls = view.get_board_urls()
         processed_urls = self.join_urls(urls)
-        processed_urls = UrlModel.exclude_duplicates(self.session, processed_urls)
+        processed_urls = UrlModel.exclude_duplicates(
+            self.session, urls=processed_urls, is_board=True
+        )
         self.logger.info(f"Found {len(processed_urls)} board urls")
 
         return processed_urls
