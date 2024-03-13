@@ -2,6 +2,7 @@ import logging
 import urllib.parse
 from typing import Iterable, Iterator
 
+import fire
 from browser import BrowserManager
 from db import Url as UrlModel
 from db import setup_db
@@ -97,3 +98,7 @@ class Scraper:
         finally:
             if self.session is not None:
                 self.session.close()
+
+
+if __name__ == "__main__":
+    fire.Fire(Scraper)
