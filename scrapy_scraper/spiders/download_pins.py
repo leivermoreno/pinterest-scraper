@@ -77,6 +77,11 @@ class DownloadPinsSpider(Spider):
                 self.logger.info(f"Pin {pin_url} has no image url")
                 return
 
+            self.session.query(self.url_model).filter_by(id=row_id).update(
+                {"scraped": True}
+            )
+            self.session.commit()
+
             yield {
                 "board_url": board_url,
                 "query": query,
@@ -86,8 +91,5 @@ class DownloadPinsSpider(Spider):
                 "image_urls": [image_url],
             }
 
-            self.session.query(self.url_model).filter_by(id=row_id).update(
-                {"scraped": True}
-            )
         except (KeyError, AttributeError, json.JSONDecodeError) as e:
             self.logger.error(f"Error parsing pin {pin_url}: {repr(e)}")
