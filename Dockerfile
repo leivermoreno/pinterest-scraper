@@ -8,6 +8,7 @@ COPY requirements.txt requirements.txt
 
 RUN pip install --no-cache-dir -r requirements.txt && \
     apt-get update && \
+    apt-get install telnet -y && \
     playwright install firefox && \
     playwright install-deps
 
