@@ -1,13 +1,11 @@
-import csv
 import json
 import re
-from pathlib import Path
 from typing import Iterable
 
 from scrapy import Request, Spider, signals
 from scrapy.crawler import Crawler
 from scrapy.http import TextResponse
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, update
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 
@@ -42,8 +40,8 @@ class DownloadPinsSpider(Spider):
         self.session.close()
 
     def start_requests(self) -> Iterable[Request]:
-        smt = select(self.url_model).where(self.url_model.scraped == False)
-        for url in self.session.scalars(smt):
+        stmt = select(self.url_model).filter_by(scraped=False)
+        for url in self.session.scalars(stmt):
             self.pending_count += 1
             yield Request(
                 url.pin_url,
@@ -77,11 +75,6 @@ class DownloadPinsSpider(Spider):
                 self.logger.info(f"Pin {pin_url} has no image url")
                 return
 
-            self.session.query(self.url_model).filter_by(id=row_id).update(
-                {"scraped": True}
-            )
-            self.session.commit()
-
             yield {
                 "board_url": board_url,
                 "query": query,
@@ -93,3 +86,8 @@ class DownloadPinsSpider(Spider):
 
         except (KeyError, AttributeError, json.JSONDecodeError) as e:
             self.logger.error(f"Error parsing pin {pin_url}: {repr(e)}")
+
+        self.session.execute(
+            update(self.url_model).filter_by(id=row_id).values(scraped=True)
+        )
+        self.session.commit()
