@@ -7,6 +7,8 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+from pathlib import Path
+
 BOT_NAME = "scrapy_scraper"
 
 SPIDER_MODULES = ["scrapy_scraper.spiders"]
@@ -18,6 +20,9 @@ NEWSPIDER_MODULE = "scrapy_scraper.spiders"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
+
+OUTPUT_DIR = Path("output")
+SQLITE_DB_PATH = OUTPUT_DIR / "db.sqlite3"
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32
