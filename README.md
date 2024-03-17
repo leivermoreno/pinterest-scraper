@@ -45,7 +45,7 @@ Params:
 - query
 - skip-process-clean make sure to use in development. Disable cleaning of process spawned by playwright after browser is done. This is needed to prevent memory leaks since playwright is intended for tests rather than long running jobs like scraping.
 
-Second stage:
+**Second stage**
 
 ```sh
 scrapy crawl download-pins -o output/data.jsonl -o output/data.csv
