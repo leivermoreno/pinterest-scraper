@@ -1,8 +1,8 @@
 from typing import Iterable
 
 from settings import SQLITE_DB_PATH
-from sqlalchemy import Engine, create_engine, select
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
 
 class Base(DeclarativeBase):
@@ -36,8 +36,8 @@ class Url(Base):
         return deduplicated_urls
 
 
-def setup_db() -> Engine:
+def setup_db() -> sessionmaker:
     engine = create_engine(f"sqlite:///{SQLITE_DB_PATH}")
     Base.metadata.create_all(engine)
 
-    return engine
+    return sessionmaker(engine)

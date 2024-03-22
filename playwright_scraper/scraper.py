@@ -7,7 +7,6 @@ from browser import BrowserManager
 from db import Url as UrlModel
 from db import setup_db
 from settings import OUTPUT_DIR
-from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 from utils import default_retry
 from views.board_grid import BoardGridView
@@ -21,7 +20,6 @@ class Scraper:
         self.initial_url = f"{self.base_url}/search/boards/?q={self.query}&rs=typed"
         self.output_dir = OUTPUT_DIR
         self.skip_process_clean = skip_process_clean
-        self.engine: Engine
         self.session: Session
         self.proxy_list: Iterator
         self.browser_manager: BrowserManager
@@ -29,8 +27,8 @@ class Scraper:
 
     def setup(self) -> None:
         self.output_dir.mkdir(exist_ok=True)
-        self.engine = setup_db()
-        self.session = Session(self.engine)
+        session_maker = setup_db()
+        self.session = session_maker()
         self.browser_manager = BrowserManager(clean_process=not self.skip_process_clean)
         logging.basicConfig(
             level=logging.INFO,
