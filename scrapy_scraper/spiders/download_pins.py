@@ -87,7 +87,7 @@ class DownloadPinsSpider(Spider):
         except (KeyError, AttributeError, json.JSONDecodeError) as e:
             self.logger.error(f"Error parsing pin {pin_url}: {repr(e)}")
 
-        self.session.execute(
-            update(self.url_model).filter_by(id=row_id).values(scraped=True)
-        )
-        self.session.commit()
+        with self.session.begin():
+            self.session.execute(
+                update(self.url_model).filter_by(id=row_id).values(scraped=True)
+            )
