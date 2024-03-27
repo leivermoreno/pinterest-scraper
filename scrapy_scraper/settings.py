@@ -7,6 +7,7 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+import os
 from pathlib import Path
 
 BOT_NAME = "scrapy_scraper"
@@ -26,6 +27,9 @@ LOG_LEVEL = "INFO"
 OUTPUT_DIR = Path("output")
 IMAGES_STORE = OUTPUT_DIR
 SQLITE_DB_PATH = OUTPUT_DIR / "db.sqlite3"
+POSTGRES_HOST = os.environ["POSTGRES_HOST"]
+POSTGRES_USER = os.environ["POSTGRES_USER"]
+POSTGRES_USER_PASSWORD = os.environ["POSTGRES_USER_PASSWORD"]
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32

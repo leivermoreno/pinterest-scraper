@@ -5,11 +5,10 @@ from typing import Iterable
 from scrapy import Request, Spider, signals
 from scrapy.crawler import Crawler
 from scrapy.http import TextResponse
-from sqlalchemy import create_engine, select, update
-from sqlalchemy.ext.automap import automap_base
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
-from scrapy_scraper.settings import SQLITE_DB_PATH
+from scrapy_scraper.db import Base, setup_db
 
 
 class DownloadPinsSpider(Spider):
@@ -20,9 +19,7 @@ class DownloadPinsSpider(Spider):
         super().__init__(*args, **kwargs)
         self.pending_count = 0
         self.completed_count = 0
-        Base = automap_base()
-        self.engine = create_engine(f"sqlite:///{SQLITE_DB_PATH}")
-        Base.prepare(autoload_with=self.engine)
+        self.session_maker = setup_db()
         self.url_model = Base.classes.url
         self.session: Session
 
@@ -34,7 +31,7 @@ class DownloadPinsSpider(Spider):
         return spider
 
     def spider_opened(self, spider):
-        self.session = Session(self.engine)
+        self.session = self.session_maker()
 
     def spider_closed(self, spider, reason):
         self.session.close()
@@ -87,7 +84,7 @@ class DownloadPinsSpider(Spider):
         except (KeyError, AttributeError, json.JSONDecodeError) as e:
             self.logger.error(f"Error parsing pin {pin_url}: {repr(e)}")
 
-        with self.session.begin():
-            self.session.execute(
-                update(self.url_model).filter_by(id=row_id).values(scraped=True)
-            )
+        self.session.execute(
+            update(self.url_model).filter_by(id=row_id).values(scraped=True)
+        )
+        self.session.commit()
