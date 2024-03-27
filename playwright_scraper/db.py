@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from settings import SQLITE_DB_PATH
+from settings import POSTGRES_HOST, POSTGRES_USER, POSTGRES_USER_PASSWORD
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
@@ -37,7 +37,9 @@ class Url(Base):
 
 
 def setup_db() -> sessionmaker:
-    engine = create_engine(f"sqlite:///{SQLITE_DB_PATH}")
+    engine = create_engine(
+        f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_USER_PASSWORD}@{POSTGRES_HOST}/pinterest_scraper"
+    )
     Base.metadata.create_all(engine)
 
     return sessionmaker(engine)
