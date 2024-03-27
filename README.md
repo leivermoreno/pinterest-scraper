@@ -10,6 +10,12 @@ Automation to scrape and download pins from pinterest. It consists of two stages
 
 `PYTHON_ENV` set by default in the docker image to "production" so browser runs in headless mode.
 
+`POSTGRES_HOST`
+
+`POSTGRES_USER`
+
+`POSTGRES_USER_PASSWORD`
+
 ## Installation
 
 Use docker to build the image from Dockerfile:
