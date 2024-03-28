@@ -2,7 +2,7 @@
 
 Automation to scrape and download pins from pinterest. It consists of two stages.
 
-**First stage:** it performs a search for boards matching the query and scrapes all pin urls within them. The scraped urls are saved to a sqlite database and marked to be downloaded later.
+**First stage:** it performs a search for boards matching the query and scrapes all pin urls within them. The scraped urls are saved to a postgres database and marked to be downloaded later.
 
 **Second stage:** it reads all pin urls marked as pending and yield the requests. When the response arrives, download the img, save pin html and img path in a new row to feed export.
 
