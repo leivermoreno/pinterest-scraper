@@ -20,7 +20,7 @@ class DownloadPinsSpider(Spider):
         self.pending_count = 0
         self.completed_count = 0
         self.session_maker = setup_db()
-        self.url_model = Base.classes.url
+        self.url_model = None
         self.session: Session
 
     @classmethod
@@ -32,11 +32,13 @@ class DownloadPinsSpider(Spider):
 
     def spider_opened(self, spider):
         self.session = self.session_maker()
+        self.url_model = Base.classes.url
 
     def spider_closed(self, spider, reason):
         self.session.close()
 
     def start_requests(self) -> Iterable[Request]:
+        assert self.url_model is not None, "url_model is not set"
         stmt = select(self.url_model).filter_by(scraped=False)
         for url in self.session.scalars(stmt):
             self.pending_count += 1
