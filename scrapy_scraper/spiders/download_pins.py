@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Iterable
+from typing import Any, Iterable
 
 from scrapy import Request, Spider, signals
 from scrapy.crawler import Crawler
@@ -20,7 +20,7 @@ class DownloadPinsSpider(Spider):
         self.pending_count = 0
         self.completed_count = 0
         self.session_maker = setup_db()
-        self.url_model = None
+        self.url_model: Any
         self.session: Session
 
     @classmethod
@@ -38,7 +38,6 @@ class DownloadPinsSpider(Spider):
         self.session.close()
 
     def start_requests(self) -> Iterable[Request]:
-        assert self.url_model is not None, "url_model is not set"
         stmt = select(self.url_model).filter_by(scraped=False)
         for url in self.session.scalars(stmt):
             self.pending_count += 1
