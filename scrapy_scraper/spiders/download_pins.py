@@ -68,21 +68,19 @@ class DownloadPinsSpider(Spider):
                 f"Pins scraped count={self.completed_count} out of {self.pending_count}"
             )
 
-            image_url = data["imageLargeUrl"]
-            if not image_url:
-                self.logger.info(f"Pin {pin_url} has no image url")
-                return
+            if data and data.get("imageLargeUrl"):
+                yield {
+                    "board_url": board_url,
+                    "query": query,
+                    "pin_url": pin_url,
+                    "title": data["title"],
+                    "description": data["closeupUnifiedDescription"],
+                    "image_urls": [data["imageLargeUrl"]],
+                }
+            else:
+                self.logger.info(f"Pin {pin_url} has no data")
 
-            yield {
-                "board_url": board_url,
-                "query": query,
-                "pin_url": pin_url,
-                "title": data["title"],
-                "description": data["closeupUnifiedDescription"],
-                "image_urls": [image_url],
-            }
-
-        except (KeyError, AttributeError, json.JSONDecodeError) as e:
+        except (AttributeError, json.JSONDecodeError) as e:
             self.logger.error(f"Error parsing pin {pin_url}: {repr(e)}")
 
         self.session.execute(
