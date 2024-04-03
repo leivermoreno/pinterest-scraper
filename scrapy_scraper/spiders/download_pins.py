@@ -80,7 +80,7 @@ class DownloadPinsSpider(Spider):
             else:
                 self.logger.info(f"Pin {pin_url} has no data")
 
-        except (AttributeError, json.JSONDecodeError) as e:
+        except (KeyError, AttributeError, json.JSONDecodeError) as e:
             self.logger.error(f"Error parsing pin {pin_url}: {repr(e)}")
 
         self.session.execute(
