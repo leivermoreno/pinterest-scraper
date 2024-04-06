@@ -9,3 +9,4 @@ Scrapy==2.11.1
 pillow==10.2.0
 scrapy-rotating-proxies==0.6.2
 psycopg2==2.9.9
+sqlalchemy-utils==0.41.2
