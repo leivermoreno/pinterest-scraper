@@ -29,7 +29,7 @@ class BaseView:
         bottom_checks = 0
         amount_scrolled = client_height
         get_scrolled_from_api = False
-        more_heading_locator = self._page.locator("h2.GTB")
+        more_heading_locator = self._page.locator("h2.GTB", has_text="More like this")
         time_counter = time.perf_counter()
 
         while True:
